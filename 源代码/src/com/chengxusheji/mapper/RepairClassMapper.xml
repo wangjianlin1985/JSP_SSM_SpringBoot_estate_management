@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.RepairClassMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加报修分类记录 -->
+	<insert id="addRepairClass" parameterType="repairClass">
+		insert into t_repairClass(repairClassName) values 
+		(#{repairClassName})
+	</insert>
+
+	<!-- 按照查询条件分页查询报修分类记录 -->
+	<select id="queryRepairClass" resultMap="repairClassMap" >
+		select t_repairClass.* from t_repairClass ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="repairClassMap" type="repairClass">
+        <id property="repairClassId" column="repairClassId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有报修分类记录 -->
+	<select id="queryRepairClassList" resultMap="repairClassMap" >
+		select t_repairClass.* from t_repairClass ${where}
+	</select>
+
+    <!-- 按照查询条件的报修分类记录数 -->
+	<select id="queryRepairClassCount" resultType="int">
+		select count(*) from t_repairClass ${where}
+	</select>
+
+	<!-- 根据主键查询某个报修分类记录 -->
+	<select id="getRepairClass" parameterType="int" resultMap="repairClassMap">
+		select * from t_repairClass where t_repairClass.repairClassId = #{repairClassId}
+	</select>
+
+	<!-- 更新报修分类记录 -->
+	<update id="updateRepairClass" parameterType="repairClass">
+		update t_repairClass set repairClassName=#{repairClassName} where repairClassId = #{repairClassId}
+	</update>
+
+	<!-- 删除报修分类记录 -->
+	<delete id="deleteRepairClass" parameterType="int">
+		delete from t_repairClass where repairClassId=#{repairClassId}
+	</delete>
+
+</mapper>

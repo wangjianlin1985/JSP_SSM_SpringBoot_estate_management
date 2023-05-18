@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ViolationMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加违规现象记录 -->
+	<insert id="addViolation" parameterType="violation">
+		insert into t_violation(userObj,title,content,handleState,handleResult,uploadTime,reportUserObj) values 
+		(#{userObj.user_name},#{title},#{content},#{handleState},#{handleResult},#{uploadTime},#{reportUserObj.user_name})
+	</insert>
+
+	<!-- 按照查询条件分页查询违规现象记录 -->
+	<select id="queryViolation" resultMap="violationMap" >
+		select t_violation.* from t_violation ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="violationMap" type="violation">
+        <id property="violationId" column="violationId" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+        <association property="reportUserObj" column="reportUserObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有违规现象记录 -->
+	<select id="queryViolationList" resultMap="violationMap" >
+		select t_violation.* from t_violation ${where}
+	</select>
+
+    <!-- 按照查询条件的违规现象记录数 -->
+	<select id="queryViolationCount" resultType="int">
+		select count(*) from t_violation ${where}
+	</select>
+
+	<!-- 根据主键查询某个违规现象记录 -->
+	<select id="getViolation" parameterType="int" resultMap="violationMap">
+		select * from t_violation where t_violation.violationId = #{violationId}
+	</select>
+
+	<!-- 更新违规现象记录 -->
+	<update id="updateViolation" parameterType="violation">
+		update t_violation set userObj=#{userObj.user_name},title=#{title},content=#{content},handleState=#{handleState},handleResult=#{handleResult},uploadTime=#{uploadTime},reportUserObj=#{reportUserObj.user_name} where violationId = #{violationId}
+	</update>
+
+	<!-- 删除违规现象记录 -->
+	<delete id="deleteViolation" parameterType="int">
+		delete from t_violation where violationId=#{violationId}
+	</delete>
+
+</mapper>

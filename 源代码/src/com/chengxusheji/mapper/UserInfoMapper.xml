@@ -1,0 +1,49 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.UserInfoMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加业主记录 -->
+	<insert id="addUserInfo" parameterType="userInfo">
+		insert into t_userInfo(user_name,password,buildingObj,roomNo,name,gender,birthDate,userPhoto,telephone,memo,regTime) values 
+		(#{user_name},#{password},#{buildingObj.buildingId},#{roomNo},#{name},#{gender},#{birthDate},#{userPhoto},#{telephone},#{memo},#{regTime})
+	</insert>
+
+	<!-- 按照查询条件分页查询业主记录 -->
+	<select id="queryUserInfo" resultMap="userInfoMap" >
+		select t_userInfo.* from t_userInfo,t_building ${where} and t_userInfo.buildingObj = t_building.buildingId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="userInfoMap" type="userInfo">
+        <id property="user_name" column="user_name" />
+        <association property="buildingObj" column="buildingObj" select="com.chengxusheji.mapper.BuildingMapper.getBuilding" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有业主记录 -->
+	<select id="queryUserInfoList" resultMap="userInfoMap" >
+		select t_userInfo.* from t_userInfo,t_building ${where} and t_userInfo.buildingObj = t_building.buildingId
+	</select>
+
+    <!-- 按照查询条件的业主记录数 -->
+	<select id="queryUserInfoCount" resultType="int">
+		select count(*) from t_userInfo,t_building ${where} and t_userInfo.buildingObj = t_building.buildingId
+	</select>
+
+	<!-- 根据主键查询某个业主记录 -->
+	<select id="getUserInfo" parameterType="string" resultMap="userInfoMap">
+		select * from t_userInfo where t_userInfo.user_name = #{user_name}
+	</select>
+
+	<!-- 更新业主记录 -->
+	<update id="updateUserInfo" parameterType="userInfo">
+		update t_userInfo set password=#{password},buildingObj=#{buildingObj.buildingId},roomNo=#{roomNo},name=#{name},gender=#{gender},birthDate=#{birthDate},userPhoto=#{userPhoto},telephone=#{telephone},memo=#{memo},regTime=#{regTime} where user_name = #{user_name}
+	</update>
+
+	<!-- 删除业主记录 -->
+	<delete id="deleteUserInfo" parameterType="string">
+		delete from t_userInfo where user_name=#{user_name}
+	</delete>
+
+</mapper>

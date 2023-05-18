@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.RepairMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加住户报修记录 -->
+	<insert id="addRepair" parameterType="repair">
+		insert into t_repair(repairClassObj,title,content,handleState,handResult,uploadTime,userObj) values 
+		(#{repairClassObj.repairClassId},#{title},#{content},#{handleState},#{handResult},#{uploadTime},#{userObj.user_name})
+	</insert>
+
+	<!-- 按照查询条件分页查询住户报修记录 -->
+	<select id="queryRepair" resultMap="repairMap" >
+		select t_repair.* from t_repair,t_repairClass,t_userInfo ${where} and t_repair.repairClassObj = t_repairClass.repairClassId and t_repair.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="repairMap" type="repair">
+        <id property="repairId" column="repairId" />
+        <association property="repairClassObj" column="repairClassObj" select="com.chengxusheji.mapper.RepairClassMapper.getRepairClass" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有住户报修记录 -->
+	<select id="queryRepairList" resultMap="repairMap" >
+		select t_repair.* from t_repair,t_repairClass,t_userInfo ${where} and t_repair.repairClassObj = t_repairClass.repairClassId and t_repair.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的住户报修记录数 -->
+	<select id="queryRepairCount" resultType="int">
+		select count(*) from t_repair,t_repairClass,t_userInfo ${where} and t_repair.repairClassObj = t_repairClass.repairClassId and t_repair.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个住户报修记录 -->
+	<select id="getRepair" parameterType="int" resultMap="repairMap">
+		select * from t_repair where t_repair.repairId = #{repairId}
+	</select>
+
+	<!-- 更新住户报修记录 -->
+	<update id="updateRepair" parameterType="repair">
+		update t_repair set repairClassObj=#{repairClassObj.repairClassId},title=#{title},content=#{content},handleState=#{handleState},handResult=#{handResult},uploadTime=#{uploadTime},userObj=#{userObj.user_name} where repairId = #{repairId}
+	</update>
+
+	<!-- 删除住户报修记录 -->
+	<delete id="deleteRepair" parameterType="int">
+		delete from t_repair where repairId=#{repairId}
+	</delete>
+
+</mapper>

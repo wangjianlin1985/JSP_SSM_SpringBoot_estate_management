@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.FeeClassMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加费用类别记录 -->
+	<insert id="addFeeClass" parameterType="feeClass">
+		insert into t_feeClass(className) values 
+		(#{className})
+	</insert>
+
+	<!-- 按照查询条件分页查询费用类别记录 -->
+	<select id="queryFeeClass" resultMap="feeClassMap" >
+		select t_feeClass.* from t_feeClass ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="feeClassMap" type="feeClass">
+        <id property="classId" column="classId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有费用类别记录 -->
+	<select id="queryFeeClassList" resultMap="feeClassMap" >
+		select t_feeClass.* from t_feeClass ${where}
+	</select>
+
+    <!-- 按照查询条件的费用类别记录数 -->
+	<select id="queryFeeClassCount" resultType="int">
+		select count(*) from t_feeClass ${where}
+	</select>
+
+	<!-- 根据主键查询某个费用类别记录 -->
+	<select id="getFeeClass" parameterType="int" resultMap="feeClassMap">
+		select * from t_feeClass where t_feeClass.classId = #{classId}
+	</select>
+
+	<!-- 更新费用类别记录 -->
+	<update id="updateFeeClass" parameterType="feeClass">
+		update t_feeClass set className=#{className} where classId = #{classId}
+	</update>
+
+	<!-- 删除费用类别记录 -->
+	<delete id="deleteFeeClass" parameterType="int">
+		delete from t_feeClass where classId=#{classId}
+	</delete>
+
+</mapper>
